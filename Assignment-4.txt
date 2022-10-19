@@ -1,0 +1,32 @@
+create table Books(
+Book_Id varchar(10),
+Book_Name varchar(20),
+Author_Name varchar(20),
+Publishers varchar(10),
+Price int,
+Type varchar(10),
+Qty int);
+
+insert into Books  values("C0001","Fast Cook","Lata Kapoor","EPB",355,"Cookery",5),
+("F0001","The Tears","William Hopkins","First Publ",650,"Fiction",20),
+("T0001","My First C++","Brain and Brook","EPB",350,"Text",10),
+("T0002","C++ Brain Works","AW Rossaine","TDH",350,"Text",15),
+("F0002","Thunderbolts","Anna Roberts","First Publ",750,"Fiction",50);
+
+select * from Books;
+
+create table Issued(
+Book_Id varchar(10) references Books(Book_Id),
+Quantity_Issued int);
+
+insert into Issued values("T0001",4),("C0001",5),("F0001",2);
+
+select * from Issued;
+
+(i)select Book_Name,Author_Name,Price,Quantity_Issued from Books inner join Issued on Books.Publishers='First Publ' and Books.Book_Id=Issued.Book_Id;
+
+(ii)select Book_Name from Books where Type="Text" and Book_Id=any(select Book_Id from Issued);
+
+(iii)select Book_Name,Price from Books order by Price asc;
+
+(iv)select Book_Name,Price+50 from Books where Publishers="EPB";
