@@ -1,0 +1,48 @@
+create table Teacher(No int,
+Name varchar(15),
+Age int,
+Department varchar(15),
+DOJ date,
+Salary int,
+Sex char(1));
+
+insert into Teacher values(1, "Jugal", 34, "Computer", "1997-01-10", 12000, "M"),
+(2, "Sharmila", 31, "History", "1998-03-24", 20000, "F"),
+(3, "Sandeep", 32, "Maths", "1996-12-12", 30000, "M"),
+(4, "Sangeeta", 35, "History", "1999-07-01", 40000, "F"),
+(5, "Rakesh", 42, "Maths", "1997-09-05", 25000, "M"),
+(6, "Shyam", 50, "History", "1998-06-27", 30000, "M"),
+(7, "Shiv Om", 44, "Computer", "1997-02-25", 21000, "M"),
+(8, "Shalakha", 33, "Maths", "1997-07-31", 20000, "F");
+
+(a)desc Teacher;
+
+(b)select * from Teacher;
+
+(c)select * from Teacher where Department="History";
+
+(d)select Name from Teacher where Sex="F" and Department="Maths";
+
+(e)select Name, DOJ from Teacher order by DOJ asc;
+
+(f)select Name, Salary,  Age from Teacher where Sex="M";
+
+(g)select Name, Salary, Age, Salary*15/100 as 'Bonus' from Teacher;
+
+(h)select Name, DOJ from Teacher where DOJ like "1997%";
+
+(i)select * from Teacher limit 3;
+
+(j)select * from Teacher where No not in (1,2,3);
+
+(k)insert into Teacher values(9, "Raja", 26, "Computer", "1995-05-13", 2300, "M");
+
+**Check The Output Of Following Queries**
+
+(i)select count(distinct department) from Teacher;
+
+(ii)select max(Age) from Teacher where Sex='F';
+
+(iii)select avg(Salary) from Teacher where Sex='M';
+
+(iv)select sum(Salary) from Teacher where DOJ < '1997-01-01';
