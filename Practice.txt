@@ -1,0 +1,240 @@
+------------------------Day 1------------------------------------
+
+create database trainingIvy;
+use trainingIvy;
+
+create table employee(
+id int,
+name varchar(10),
+dept varchar(10),
+salary int,
+address varchar(20));
+
+desc employee;
+
+insert into employee values(1,"ABC","IT",10000,"Delhi"),(2,"ABC-1","HR",15000,"Bangalore"),(3,"ABC-2","ops",5000,"Hyderabad");
+
+select * from employee;
+
+create table student(
+id int not null unique,
+name varchar(10) unique,
+email varchar(20) unique,
+age int, check(age>=18),
+status boolean default 1);
+
+insert into student values(2,"abcd","abcd@gmail",18,10);
+
+insert into student values(3,"abcde","abcde@gmail",18,null);
+select * from student;
+
+create table student1(
+id int primary key,
+name varchar(10),
+city varchar(10));
+
+create table student2(
+id int primary key,
+name varchar(10),
+city varchar(10) references student1(city));
+
+
+create table student1(
+id int,
+name varchar(10),
+city varchar(10),
+primary key(id));
+
+------------------------Day 2------------------------------------
+
+use trainingIvy;
+show tables;
+
+create table teacher(
+id int,
+name varchar(20),
+dept int);
+
+create table courses(
+courseId int,
+courseName varchar(10),
+teacherId int references teacher(id));
+
+insert into teacher values(1,'A',10),(2,"B",20),(3,"C",30);
+select * from teacher;
+rollback;
+commit;
+
+insert into courses values(11,"JAVA",1),(12,"Python",2),(13,"PHP",3);
+select * from courses;
+insert into courses values(14,"C++",1);
+insert into courses values(11,"JAVA",2),(12,"Python",1),(13,"PHP",1);
+delete from courses where courseId=14;
+
+select * from teacher inner join courses on teacher.id=courses.teacherId;
+select * from courses inner join teacher on teacher.id=courses.teacherId;
+
+select * from teacher left join courses on teacher.id=courses.teacherId;
+select * from courses left join teacher on teacher.id=courses.teacherId;
+
+select * from teacher right join courses on teacher.id=courses.teacherId;
+select * from courses right join teacher on teacher.id=courses.teacherId;
+
+select * from teacher cross join courses;
+
+
+select * from courses group by teacherId having (teacherId)=2;
+select * from courses having (teacherId)=2;
+
+select courseName from courses where teacherId=(select id from teacher where name="A");
+select name from teacher where id=any(select teacherId from courses group by teacherId having count(teacherId)>1);
+
+select ucase(name) as 'name' from teacher where id=1;
+
+select datediff('2022-10-18','2001-08-30') div 365;
+
+------------------------Day 3------------------------------------
+
+use trainingIvy;
+
+Delimiter $
+create function helloworld()
+returns varchar(50)
+deterministic
+begin
+return " hello world from user defined function";
+end$
+Delimiter ;
+select helloworld() as 'string';
+select fullName('sai','kumar');
+
+Delimiter $
+create function fullName(firstName varchar(20),lastName varchar(20))
+returns varchar(40)
+deterministic
+begin
+Return concat(firstName,lastName);
+end$
+Delimiter ;
+
+Delimiter $
+create function multiplication(numberOne int,numberTwo int)
+returns int
+deterministic
+begin
+return (numberOne*numberTwo);
+end$
+delimiter ;
+select multiplication(2,3);
+
+Delimiter $
+create function calculateAge(dob date)
+returns int
+deterministic
+begin
+declare todayDate date;
+select current_date()  into todayDate;
+return year(todayDate)-year(dob);
+end $
+Delimiter ;
+
+select calculateAge('2000-08-30') as 'Age';
+
+
+
+Delimiter $
+create procedure getTeacherTable()
+begin
+select * from teachers;
+end$
+Delimiter ;
+
+call getTeacherTable();
+
+Delimiter $
+create procedure getTeacherName(in id int)
+begin
+select name from teachers where teachers.no=id;
+end$
+Delimiter ;
+
+call getTeacherName(1);
+
+Delimiter $
+create procedure getTeachersCount(out teachersCount int)
+begin
+select count(name) into teachersCount from teachers;
+end$
+Delimiter ;
+
+call getTeachersCount(@teachersCount);
+select @teachersCount as 'total no of teachers';
+
+Delimiter $
+create procedure getCountByDeptOfTeachers(in department varchar(10), out teacherCount int)
+begin
+select count(name) into teacherCount from teachers where teachers.department=department;
+end$
+Delimiter ;
+
+call getCountByDeptOfTeachers('history',@teacherCount);
+select @teacherCount;
+
+create view teachersView as select name,age from teachers;
+select * from teachersView;
+select * from teachersView where age in(35,26);
+
+------------------------Day 4------------------------------------
+
+use trainingIvy;
+
+create table employeeChanges(
+empno int,
+beforeSal decimal(20,2),
+afterSal decimal(20,2));
+
+Delimiter $
+create trigger properSalary
+after update on employees for each row
+begin
+if old.salary<new.salary then insert into employeeChanges values(old.empno,old.salary,new.salary);
+end if;
+end$
+Delimiter ;
+
+update employees set salary=1005.00 where empno=8521;
+
+select * from employees;
+select * from employeeChanges;
+drop trigger properSalary;
+
+start transaction;
+insert into employeechanges values(123,144.00,177.60);
+commit;
+update employeechanges set afterSal=200.00;
+rollback;
+
+start transaction;
+insert into employeechanges values(1453,112.00,167.60);
+savepoint pointOne;
+update employeechanges set afterSal=300.00 where empno=1453;
+rollback to pointOne;
+delete from employeechanges where empno=123;
+commit;
+
+create table abcBank(
+cusId int,
+cusName varchar(10),
+amount int);
+
+insert into abcBank values(1,"A",1000),(2,"B",2000),(3,"C",3000),(4,"D",4000);
+
+select * from abcBank;
+
+start transaction;
+update abcBank set amount= amount-100 where cusId = 1;
+savepoint pointOne;
+update abcBank set amount= amount+200 where cusId=3;
+rollback to pointOne;
+insert into abcBank values(5,"E",500);
+commit;
